@@ -9,7 +9,7 @@ Volunteers can view, apply for, and track volunteer activities.
 Organizations can post opportunities, approve volunteers, and manage activities.
 The system efficiently manages all volunteer-related data in a SQLite database.
 
-3. Technology Stack :
+2. Technology Stack :
    
 Frontend:
 HTML – structure of pages
@@ -76,7 +76,7 @@ Example : Volunteer clicks “Apply” → JS sends POST /apply → Express adds
 Volunteer → Browses → Applies → Backend → DB → Status Updated → Volunteer & Organization Dashboard
 Organization → Creates Announcement → Backend → DB → Volunteer Sees → Manages Applications → Status Updated
 
-8. Applications :
+7. Applications :
    
 For Volunteers: Find, apply, and track volunteering activities with ease.
 For Organizations: Post events, manage volunteer applications, and monitor participation.
