@@ -63,19 +63,21 @@ Volunteers can see hours contributed and status of applications.
 Organizations can see list of volunteers and manage ongoing activities.
 
 5. Frontend & Backend Integration :
+   
 Frontend sends HTTP requests (GET, POST, PUT) to backend API endpoints.
 Backend uses Express.js routes to handle requests and interact with the SQLite database.
 Backend returns data in JSON format.
 Frontend dynamically updates UI using JavaScript based on API responses.
 
-Example:
-Volunteer clicks “Apply” → JS sends POST /apply → Express adds record in DB → Returns success → JS updates UI.
+Example : Volunteer clicks “Apply” → JS sends POST /apply → Express adds record in DB → Returns success → JS updates UI.
 
 6. Full Overview in Workflow Diagram (Conceptually) :
+   
 Volunteer → Browses → Applies → Backend → DB → Status Updated → Volunteer & Organization Dashboard
 Organization → Creates Announcement → Backend → DB → Volunteer Sees → Manages Applications → Status Updated
 
-7. Applications
+8. Applications :
+   
 For Volunteers: Find, apply, and track volunteering activities with ease.
 For Organizations: Post events, manage volunteer applications, and monitor participation.
 Community Impact: Increases volunteer engagement and streamlines event management.
