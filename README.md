@@ -1,6 +1,6 @@
 # Charity-volunteer-portal
 
-1. Project Overview
+1. Project Overview :
 This web application connects volunteers with organizations needing help.
 Built using Node.js and Express.js for backend.
 Uses HTML, CSS, and JavaScript for frontend.
@@ -8,7 +8,7 @@ Volunteers can view, apply for, and track volunteer activities.
 Organizations can post opportunities, approve volunteers, and manage activities.
 The system efficiently manages all volunteer-related data in a SQLite database.
 
-2. Technology Stack
+2. Technology Stack :
 Frontend:
 HTML – structure of pages
 CSS – styling and layout
@@ -23,7 +23,7 @@ Other Tools:
 bcrypt – for password hashing
 REST APIs – for communication between frontend and backend
 
-3. Database Structure
+3. Database Structure :
 Tables:
 users – stores volunteers and organizations
 announcements – stores volunteering opportunities
@@ -34,7 +34,7 @@ users ↔ announcements (organization creates announcements)
 users ↔ volunteer_activities (volunteers apply for activities)
 announcements ↔ volunteer_activities (tracks volunteer participation)
 
-4. Workflow (Step-by-Step)
+4. Workflow (Step-by-Step) :
 Step 1: User Registration & Login
 Users register as volunteer or organization.
 Passwords are hashed before storing.
@@ -58,7 +58,7 @@ Step 5: Tracking & Reporting
 Volunteers can see hours contributed and status of applications.
 Organizations can see list of volunteers and manage ongoing activities.
 
-5. Frontend & Backend Integration
+5. Frontend & Backend Integration :
 Frontend sends HTTP requests (GET, POST, PUT) to backend API endpoints.
 Backend uses Express.js routes to handle requests and interact with the SQLite database.
 Backend returns data in JSON format.
@@ -67,7 +67,7 @@ Frontend dynamically updates UI using JavaScript based on API responses.
 Example:
 Volunteer clicks “Apply” → JS sends POST /apply → Express adds record in DB → Returns success → JS updates UI.
 
-6. Full Overview in Workflow Diagram (Conceptually)
+6. Full Overview in Workflow Diagram (Conceptually) :
 Volunteer → Browses → Applies → Backend → DB → Status Updated → Volunteer & Organization Dashboard
 Organization → Creates Announcement → Backend → DB → Volunteer Sees → Manages Applications → Status Updated
 
