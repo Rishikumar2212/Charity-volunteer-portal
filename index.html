@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charity - Volunteer Management Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-primary': '#0f172a',
+                        'dark-secondary': '#1e293b',
+                        'dark-accent': '#334155',
+                        'dark-highlight': '#4f46e5',
+                        'dark-text': '#e2e8f0',
+                        'dark-muted': '#94a3b8'
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            'from': { boxShadow: '0 0 10px #4f46e5, 0 0 20px #4f46e5' },
+                            'to': { boxShadow: '0 0 20px #4f46e5, 0 0 30px #4f46e5' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px rgba(79, 70, 229, 0.8), 0 0 20px rgba(79, 70, 229, 0.6);
+        }
+
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(#0f172a, #0f172a) padding-box,
+                        linear-gradient(135deg, #4f46e5, #7c3aed) border-box;
+            border: 2px solid transparent;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .rank-badge {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .dark-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .dark-scrollbar::-webkit-scrollbar-track {
+            background: '#1e293b';
+        }
+
+        .dark-scrollbar::-webkit-scrollbar-thumb {
+            background: '#4f46e5';
+            border-radius: 4px;
+        }
+
+        .dark-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: '#6366f1';
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-dark-primary text-dark-text min-h-screen dark-scrollbar">
+<!-- Background Animation -->
+<div class="fixed inset-0 overflow-hidden z-0">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow"></div>
+</div>
+
+<!-- Main Container -->
+<div id="app" class="relative z-10 min-h-screen">
+    <!-- Landing Page -->
+    <div id="landingPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-4xl w-full">
+            <div class="text-center mb-12 animate-float">
+                <h1 class="text-6xl font-bold mb-4 neon-text">
+                    <i class="fas fa-hands-helping text-dark-highlight mr-3"></i>Charity
+                </h1>
+                <p class="text-xl text-dark-muted">Empowering Communities Through Volunteerism</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Organization Login Card -->
+                <div class="glass-effect rounded-2xl p-8 card-hover cursor-pointer gradient-border" onclick="showAuth('organization', 'login')">
+                    <div class="text-center">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center animate-glow">
+                            <i class="fas fa-building text-4xl text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2">Organization Portal</h2>
+                        <p class="text-dark-muted mb-6">Post opportunities, manage volunteers, and track impact</p>
+                        <button class="w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-semibold hover:from-purple-700 hover:to-indigo-800 transition duration-300">
+                            Access Organization Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Volunteer Login Card -->
+                <div class="glass-effect rounded-2xl p-8 card-hover cursor-pointer gradient-border" onclick="showAuth('volunteer', 'login')">
+                    <div class="text-center">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center animate-glow">
+                            <i class="fas fa-user-friends text-4xl text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2">Volunteer Portal</h2>
+                        <p class="text-dark-muted mb-6">Discover opportunities, track your impact, and climb the ranks</p>
+                        <button class="w-full py-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold hover:from-blue-700 hover:to-cyan-600 transition duration-300">
+                            Access Volunteer Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <p class="text-dark-muted">Don't have an account? <a href="#" onclick="showAuth('', 'register')" class="text-dark-highlight hover:underline">Register here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Page (Login/Register) -->
+    <div id="authPage" class="min-h-screen flex items-center justify-center p-4 hidden">
+        <div class="w-full max-w-md">
+            <div class="glass-effect rounded-2xl p-8 gradient-border">
+                <div class="text-center mb-8">
+                    <div id="authIcon" class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"></div>
+                    <h2 id="authTitle" class="text-3xl font-bold"></h2>
+                    <p id="authSubtitle" class="text-dark-muted mt-2"></p>
+                </div>
+
+                <!-- Toggle between Login and Register -->
+                <div class="flex mb-6 bg-dark-secondary rounded-lg p-1">
+                    <button id="loginTab" class="flex-1 py-2 rounded-md text-sm font-medium transition" onclick="toggleAuthMode('login')">
+                        Login
+                    </button>
+                    <button id="registerTab" class="flex-1 py-2 rounded-md text-sm font-medium transition" onclick="toggleAuthMode('register')">
+                        Register
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="mb-4">
+                        <label class="block text-dark-muted text-sm font-bold mb-2" for="loginEmail">
+                            Email
+                        </label>
+                        <input class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text"
+                               id="loginEmail" type="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-dark-muted text-sm font-bold mb-2" for="loginPassword">
+                            Password
+                        </label>
+                        <input class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text"
+                               id="loginPassword" type="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-dark-highlight to-purple-600 text-white font-bold hover:opacity-90 transition duration-300">
+                        Login
+                    </button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" onsubmit="handleRegister(event)" class="hidden">
+                    <div class="mb-4">
+                        <label class="block text-dark-muted text-sm font-bold mb-2" for="registerName">
+                            Full Name
+                        </label>
+                        <input class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text"
+                               id="registerName" type="text" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-dark-muted text-sm font-bold mb-2" for="registerEmail">
+                            Email
+                        </label>
+                        <input class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text"
+                               id="registerEmail" type="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-dark-muted text-sm font-bold mb-2" for="registerPassword">
+                            Password
+                        </label>
+                        <input class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text"
+                               id="registerPassword" type="password" placeholder="Create a password" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-dark-muted text-sm font-bold mb-2" for="registerConfirmPassword">
+                            Confirm Password
+                        </label>
+                        <input class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text"
+                               id="registerConfirmPassword" type="password" placeholder="Confirm your password" required>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-dark-muted text-sm font-bold mb-2">Account Type</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="flex items-center justify-center p-4 bg-dark-secondary rounded-lg cursor-pointer hover:bg-dark-accent transition">
+                                <input type="radio" name="userType" value="organization" class="sr-only">
+                                <div class="text-center">
+                                    <i class="fas fa-building text-2xl text-purple-400 mb-2"></i>
+                                    <p>Organization</p>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-center p-4 bg-dark-secondary rounded-lg cursor-pointer hover:bg-dark-accent transition">
+                                <input type="radio" name="userType" value="volunteer" class="sr-only">
+                                <div class="text-center">
+                                    <i class="fas fa-user-friends text-2xl text-blue-400 mb-2"></i>
+                                    <p>Volunteer</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-dark-highlight to-purple-600 text-white font-bold hover:opacity-90 transition duration-300">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <a href="#" onclick="showLanding()" class="text-sm text-dark-muted hover:text-dark-highlight">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Organization Dashboard -->
+    <div id="organizationDashboard" class="min-h-screen hidden">
+        <!-- Header -->
+        <header class="glass-effect border-b border-dark-accent sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <i class="fas fa-hands-helping text-2xl text-dark-highlight mr-3"></i>
+                        <h1 class="text-xl font-bold">Charity - Organization Portal</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-dark-muted">Welcome, <span id="orgName" class="font-semibold text-dark-text"></span></span>
+                        <button onclick="logout()" class="text-dark-muted hover:text-red-500 transition">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-purple-900/30">
+                            <i class="fas fa-bullhorn text-purple-400 text-xl"></i>
+                        </div>
+                        <span class="text-sm text-dark-muted">+12%</span>
+                    </div>
+                    <p class="text-dark-muted text-sm">Total Announcements</p>
+                    <p class="text-2xl font-bold" id="totalAnnouncements">0</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-blue-900/30">
+                            <i class="fas fa-users text-blue-400 text-xl"></i>
+                        </div>
+                        <span class="text-sm text-dark-muted">+8%</span>
+                    </div>
+                    <p class="text-dark-muted text-sm">Active Volunteers</p>
+                    <p class="text-2xl font-bold" id="activeVolunteers">0</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-green-900/30">
+                            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                        </div>
+                        <span class="text-sm text-dark-muted">+15%</span>
+                    </div>
+                    <p class="text-dark-muted text-sm">Completed Events</p>
+                    <p class="text-2xl font-bold" id="completedEvents">0</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-amber-900/30">
+                            <i class="fas fa-clock text-amber-400 text-xl"></i>
+                        </div>
+                        <span class="text-sm text-dark-muted">+5%</span>
+                    </div>
+                    <p class="text-dark-muted text-sm">Volunteer Hours</p>
+                    <p class="text-2xl font-bold" id="totalHours">0</p>
+                </div>
+            </div>
+
+            <!-- Charts and Rankings Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Volunteer Activity Chart -->
+                <div class="lg:col-span-2 glass-effect rounded-xl p-6">
+                    <h2 class="text-xl font-bold mb-4">Volunteer Activity Over Time</h2>
+                    <div class="chart-container">
+                        <canvas id="volunteerActivityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Volunteers -->
+                <div class="glass-effect rounded-xl p-6">
+                    <h2 class="text-xl font-bold mb-4">Top Volunteers</h2>
+                    <div class="space-y-4" id="topVolunteersList">
+                        <!-- Top volunteers will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Announcement Section -->
+            <div class="glass-effect rounded-xl p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4">Create New Announcement</h2>
+                <form id="announcementForm" onsubmit="createAnnouncement(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-dark-muted text-sm font-bold mb-2">Title</label>
+                            <input type="text" id="announcementTitle" class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text" required>
+                        </div>
+                        <div>
+                            <label class="block text-dark-muted text-sm font-bold mb-2">Date</label>
+                            <input type="date" id="announcementDate" class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-dark-muted text-sm font-bold mb-2">Location</label>
+                        <input type="text" id="announcementLocation" class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-dark-muted text-sm font-bold mb-2">Description</label>
+                        <textarea id="announcementDescription" rows="4" class="w-full px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text" required></textarea>
+                    </div>
+
+                    <button type="submit" class="px-6 py-3 rounded-lg bg-gradient-to-r from-dark-highlight to-purple-600 text-white font-bold hover:opacity-90 transition duration-300">
+                        <i class="fas fa-plus mr-2"></i>Create Announcement
+                    </button>
+                </form>
+            </div>
+
+            <!-- My Announcements -->
+            <div class="glass-effect rounded-xl p-6">
+                <h2 class="text-xl font-bold mb-4">My Announcements</h2>
+                <div id="orgAnnouncementsList" class="space-y-4">
+                    <!-- Announcements will be populated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Volunteer Dashboard -->
+    <div id="volunteerDashboard" class="min-h-screen hidden">
+        <!-- Header -->
+        <header class="glass-effect border-b border-dark-accent sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <i class="fas fa-hands-helping text-2xl text-dark-highlight mr-3"></i>
+                        <h1 class="text-xl font-bold">Charity - Volunteer Portal</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-dark-muted">Welcome, <span id="volunteerName" class="font-semibold text-dark-text"></span></span>
+                        <button onclick="logout()" class="text-dark-muted hover:text-red-500 transition">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-blue-900/30">
+                            <i class="fas fa-hand-paper text-blue-400 text-xl"></i>
+                        </div>
+                        <span class="text-sm text-dark-muted">+3</span>
+                    </div>
+                    <p class="text-dark-muted text-sm">Applications</p>
+                    <p class="text-2xl font-bold" id="applications">0</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-green-900/30">
+                            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                        </div>
+                        <span class="text-sm text-dark-muted">+2</span>
+                    </div>
+                    <p class="text-dark-muted text-sm">Completed Events</p>
+                    <p class="text-2xl font-bold" id="completedEventsVol">0</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-amber-900/30">
+                            <i class="fas fa-clock text-amber-400 text-xl"></i>
+                        </div>
+                        <span class="text-sm text-dark-muted">+12</span>
+                    </div>
+                    <p class="text-dark-muted text-sm">Volunteer Hours</p>
+                    <p class="text-2xl font-bold" id="volunteerHours">0</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-purple-900/30">
+                            <i class="fas fa-trophy text-purple-400 text-xl"></i>
+                        </div>
+                        <span class="rank-badge" id="volunteerRank">#-</span>
+                    </div>
+                    <p class="text-dark-muted text-sm">Your Rank</p>
+                    <p class="text-2xl font-bold" id="volunteerRankName">-</p>
+                </div>
+            </div>
+
+            <!-- Progress and Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Progress to Next Rank -->
+                <div class="glass-effect rounded-xl p-6">
+                    <h2 class="text-xl font-bold mb-4">Progress to Next Rank</h2>
+                    <div class="flex flex-col items-center">
+                        <div class="relative w-40 h-40 mb-4">
+                            <svg class="w-40 h-40">
+                                <circle cx="80" cy="80" r="70" stroke="#334155" stroke-width="12" fill="none"></circle>
+                                <circle cx="80" cy="80" r="70" stroke="url(#gradient)" stroke-width="12" fill="none"
+                                        stroke-dasharray="440" stroke-dashoffset="110" class="progress-ring"></circle>
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#4f46e5"></stop>
+                                        <stop offset="100%" stop-color="#7c3aed"></stop>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-2xl font-bold" id="progressPercent">0%</span>
+                            </div>
+                        </div>
+                        <p class="text-dark-muted text-center" id="progressText">Start volunteering to earn your rank!</p>
+                    </div>
+                </div>
+
+                <!-- Activity Chart -->
+                <div class="lg:col-span-2 glass-effect rounded-xl p-6">
+                    <h2 class="text-xl font-bold mb-4">Your Activity Over Time</h2>
+                    <div class="chart-container">
+                        <canvas id="userActivityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Volunteers -->
+            <div class="glass-effect rounded-xl p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4">Volunteer Leaderboard</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                        <tr class="text-left text-dark-muted border-b border-dark-accent">
+                            <th class="pb-3">Rank</th>
+                            <th class="pb-3">Volunteer</th>
+                            <th class="pb-3">Hours</th>
+                            <th class="pb-3">Events</th>
+                            <th class="pb-3">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                        <!-- Leaderboard will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="glass-effect rounded-xl p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4">Find Volunteer Opportunities</h2>
+                <div class="flex flex-col md:flex-row gap-4">
+                    <input type="text" id="searchInput" placeholder="Search opportunities..."
+                           class="flex-1 px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text"
+                           oninput="filterAnnouncements()">
+                    <select id="locationFilter" class="px-4 py-3 bg-dark-secondary border border-dark-accent rounded-lg focus:outline-none focus:border-dark-highlight text-dark-text"
+                            onchange="filterAnnouncements()">
+                        <option value="">All Locations</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Announcements Grid -->
+            <div id="announcementsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Announcements will be populated here -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div id="successToast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+    <i class="fas fa-check-circle mr-2"></i>
+    <span id="toastMessage">Success!</span>
+</div>
+
+<script>
+    // API configuration
+    const API_BASE_URL = 'http://localhost:5000/api';
+
+    // Data storage
+    let announcements = [];
+    let currentUser = null;
+    let currentUserType = null;
+    let authToken = null;
+    let volunteerActivityChart = null;
+    let userActivityChart = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set minimum date to today
+        document.getElementById('announcementDate').min = new Date().toISOString().split('T')[0];
+
+        // Add event listeners for radio buttons
+        document.querySelectorAll('input[name="userType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('label:has(input[name="userType"])').forEach(label => {
+                    label.classList.remove('ring-2', 'ring-dark-highlight');
+                });
+                if (this.checked) {
+                    this.closest('label').classList.add('ring-2', 'ring-dark-highlight');
+                }
+            });
+        });
+    });
+
+    // Navigation functions
+    function showLanding() {
+        hideAllPages();
+        document.getElementById('landingPage').classList.remove('hidden');
+    }
+
+    function showAuth(type, mode) {
+        hideAllPages();
+        document.getElementById('authPage').classList.remove('hidden');
+
+        // Set the initial mode
+        toggleAuthMode(mode);
+
+        // Set the user type if provided
+        if (type) {
+            document.querySelector(`input[name="userType"][value="${type}"]`).checked = true;
+            document.querySelector(`input[name="userType"][value="${type}"]`).closest('label').classList.add('ring-2', 'ring-dark-highlight');
+        }
+
+        currentUserType = type;
+    }
+
+    function toggleAuthMode(mode) {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const authIcon = document.getElementById('authIcon');
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+
+        if (mode === 'login') {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            loginTab.classList.add('bg-dark-highlight', 'text-white');
+            loginTab.classList.remove('text-dark-muted');
+            registerTab.classList.remove('bg-dark-highlight', 'text-white');
+            registerTab.classList.add('text-dark-muted');
+
+            // Update icon and title based on user type
+            if (currentUserType === 'organization') {
+                authIcon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-indigo-700';
+                authIcon.innerHTML = '<i class="fas fa-building text-4xl text-white"></i>';
+                authTitle.textContent = 'Organization Login';
+                authSubtitle.textContent = 'Sign in to your organization account';
+            } else {
+                authIcon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-cyan-500';
+                authIcon.innerHTML = '<i class="fas fa-user-friends text-4xl text-white"></i>';
+                authTitle.textContent = 'Volunteer Login';
+                authSubtitle.textContent = 'Sign in to your volunteer account';
+            }
+        } else {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            registerTab.classList.add('bg-dark-highlight', 'text-white');
+            registerTab.classList.remove('text-dark-muted');
+            loginTab.classList.remove('bg-dark-highlight', 'text-white');
+            loginTab.classList.add('text-dark-muted');
+
+            // Update icon and title for registration
+            authIcon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center bg-gradient-to-br from-green-600 to-emerald-500';
+            authIcon.innerHTML = '<i class="fas fa-user-plus text-4xl text-white"></i>';
+            authTitle.textContent = 'Create Account';
+            authSubtitle.textContent = 'Join our volunteer community';
+        }
+    }
+
+    function hideAllPages() {
+        document.getElementById('landingPage').classList.add('hidden');
+        document.getElementById('authPage').classList.add('hidden');
+        document.getElementById('organizationDashboard').classList.add('hidden');
+        document.getElementById('volunteerDashboard').classList.add('hidden');
+    }
+
+    // API helper functions
+    async function apiRequest(endpoint, options = {}) {
+        const url = `${API_BASE_URL}${endpoint}`;
+        const defaultOptions = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        if (authToken) {
+            defaultOptions.headers.Authorization = `Bearer ${authToken}`;
+        }
+
+        const config = { ...defaultOptions, ...options };
+
+        try {
+            const response = await fetch(url, config);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'API request failed');
+            }
+
+            return data;
+        } catch (error) {
+            console.error('API request error:', error);
+            throw error;
+        }
+    }
+
+    // Authentication handlers
+    async function handleLogin(event) {
+        event.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const response = await apiRequest('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password })
+            });
+
+            authToken = response.token;
+            currentUser = response.user;
+            currentUserType = response.user.type;
+
+            // Save to localStorage for persistence
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('currentUserType', currentUserType);
+
+            if (currentUserType === 'organization') {
+                document.getElementById('orgName').textContent = currentUser.name;
+                showOrganizationDashboard();
+            } else {
+                document.getElementById('volunteerName').textContent = currentUser.name;
+                showVolunteerDashboard();
+            }
+
+            showToast('Login successful!');
+        } catch (error) {
+            showToast(error.message || 'Login failed');
+        }
+    }
+
+    async function handleRegister(event) {
+        event.preventDefault();
+        const name = document.getElementById('registerName').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        const type = document.querySelector('input[name="userType"]:checked')?.value;
+
+        if (!type) {
+            showToast('Please select an account type');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showToast('Passwords do not match');
+            return;
+        }
+
+        try {
+            const response = await apiRequest('/auth/register', {
+                method: 'POST',
+                body: JSON.stringify({ name, email, password, type })
+            });
+
+            authToken = response.token;
+            currentUser = response.user;
+            currentUserType = response.user.type;
+
+            // Save to localStorage for persistence
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('currentUserType', currentUserType);
+
+            if (currentUserType === 'organization') {
+                document.getElementById('orgName').textContent = currentUser.name;
+                showOrganizationDashboard();
+            } else {
+                document.getElementById('volunteerName').textContent = currentUser.name;
+                showVolunteerDashboard();
+            }
+
+            showToast('Registration successful!');
+        } catch (error) {
+            showToast(error.message || 'Registration failed');
+        }
+    }
+
+    // Check for existing session on load
+    window.addEventListener('load', () => {
+        const savedToken = localStorage.getItem('authToken');
+        const savedUser = localStorage.getItem('currentUser');
+        const savedUserType = localStorage.getItem('currentUserType');
+
+        if (savedToken && savedUser && savedUserType) {
+            authToken = savedToken;
+            currentUser = JSON.parse(savedUser);
+            currentUserType = savedUserType;
+
+            if (currentUserType === 'organization') {
+                document.getElementById('orgName').textContent = currentUser.name;
+                showOrganizationDashboard();
+            } else {
+                document.getElementById('volunteerName').textContent = currentUser.name;
+                showVolunteerDashboard();
+            }
+        }
+    });
+
+    function showOrganizationDashboard() {
+        hideAllPages();
+        document.getElementById('organizationDashboard').classList.remove('hidden');
+        loadOrgDashboardData();
+        setTimeout(() => initVolunteerActivityChart(), 100);
+    }
+
+    function showVolunteerDashboard() {
+        hideAllPages();
+        document.getElementById('volunteerDashboard').classList.remove('hidden');
+        loadVolunteerDashboardData();
+        setTimeout(() => initUserActivityChart(), 100);
+    }
+
+    // Load organization dashboard data
+    async function loadOrgDashboardData() {
+        try {
+            // Load dashboard stats
+            const stats = await apiRequest('/dashboard/organization');
+            document.getElementById('totalAnnouncements').textContent = stats.announcements;
+            document.getElementById('activeVolunteers').textContent = stats.activeVolunteers;
+            document.getElementById('completedEvents').textContent = stats.completedEvents;
+            document.getElementById('totalHours').textContent = stats.totalHours;
+
+            // Load announcements
+            announcements = await apiRequest('/announcements');
+            updateOrgAnnouncements();
+
+            // Load top volunteers
+            const leaderboard = await apiRequest('/leaderboard');
+            updateTopVolunteers(leaderboard);
+        } catch (error) {
+            showToast('Failed to load dashboard data');
+        }
+    }
+
+    // Load volunteer dashboard data
+    async function loadVolunteerDashboardData() {
+        try {
+            // Load dashboard stats
+            const stats = await apiRequest('/dashboard/volunteer');
+            document.getElementById('applications').textContent = stats.applications;
+            document.getElementById('completedEventsVol').textContent = stats.completedEvents;
+            document.getElementById('volunteerHours').textContent = stats.totalHours;
+            document.getElementById('volunteerRank').textContent = `#${stats.position}`;
+            document.getElementById('volunteerRankName').textContent = stats.rank;
+
+            // Update progress ring
+            updateProgressRing(stats.totalHours, stats.rank);
+
+            // Load announcements
+            announcements = await apiRequest('/announcements');
+            displayVolunteerAnnouncements();
+            updateLocationFilter();
+
+            // Load leaderboard
+            const leaderboard = await apiRequest('/leaderboard');
+            updateLeaderboard(leaderboard);
+        } catch (error) {
+            showToast('Failed to load dashboard data');
+        }
+    }
+
+    // Announcement management
+    async function createAnnouncement(event) {
+        event.preventDefault();
+
+        const announcementData = {
+            title: document.getElementById('announcementTitle').value,
+            date: document.getElementById('announcementDate').value,
+            location: document.getElementById('announcementLocation').value,
+            description: document.getElementById('announcementDescription').value
+        };
+
+        try {
+            const newAnnouncement = await apiRequest('/announcements', {
+                method: 'POST',
+                body: JSON.stringify(announcementData)
+            });
+
+            // Reset form
+            document.getElementById('announcementForm').reset();
+
+            // Update displays
+            announcements.push(newAnnouncement.announcement);
+            updateOrgAnnouncements();
+            loadOrgDashboardData();
+            showToast('Announcement created successfully!');
+        } catch (error) {
+            showToast('Failed to create announcement');
+        }
+    }
+
+    function updateOrgAnnouncements() {
+        const orgAnnouncements = announcements.filter(a => a.organization_id === currentUser.id);
+        const listContainer = document.getElementById('orgAnnouncementsList');
+
+        if (orgAnnouncements.length === 0) {
+            listContainer.innerHTML = '<p class="text-dark-muted text-center py-8">No announcements yet. Create your first announcement above!</p>';
+            return;
+        }
+
+        listContainer.innerHTML = orgAnnouncements.map(announcement => `
+            <div class="bg-dark-secondary rounded-lg p-4 announcement-card">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-lg font-semibold">${announcement.title}</h3>
+                    <button onclick="deleteAnnouncement(${announcement.id})" class="text-red-500 hover:text-red-400">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="flex items-center text-sm text-dark-muted mb-2">
+                    <i class="fas fa-calendar mr-2"></i>
+                    <span>${new Date(announcement.date).toLocaleDateString()}</span>
+                    <i class="fas fa-map-marker-alt ml-4 mr-2"></i>
+                    <span>${announcement.location}</span>
+                </div>
+                <p class="text-dark-text">${announcement.description}</p>
+            </div>
+        `).join('');
+    }
+
+    async function deleteAnnouncement(id) {
+        if (confirm('Are you sure you want to delete this announcement?')) {
+            try {
+                await apiRequest(`/announcements/${id}`, {
+                    method: 'DELETE'
+                });
+
+                announcements = announcements.filter(a => a.id !== id);
+                updateOrgAnnouncements();
+                loadOrgDashboardData();
+                showToast('Announcement deleted successfully!');
+            } catch (error) {
+                showToast('Failed to delete announcement');
+            }
+        }
+    }
+
+    function displayVolunteerAnnouncements() {
+        const grid = document.getElementById('announcementsGrid');
+
+        if (announcements.length === 0) {
+            grid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-dark-muted text-lg">No volunteer opportunities available at the moment.</p></div>';
+            return;
+        }
+
+        grid.innerHTML = announcements.map(announcement => `
+            <div class="glass-effect rounded-xl p-6 announcement-card" data-location="${announcement.location.toLowerCase()}">
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold mb-2">${announcement.title}</h3>
+                    <div class="flex items-center text-sm text-dark-muted space-x-4">
+                        <span><i class="fas fa-calendar mr-1"></i> ${new Date(announcement.date).toLocaleDateString()}</span>
+                        <span><i class="fas fa-map-marker-alt mr-1"></i> ${announcement.location}</span>
+                    </div>
+                </div>
+                <p class="text-dark-text mb-4">${announcement.description}</p>
+                <button onclick="applyForOpportunity(${announcement.id})" class="w-full py-2 rounded-lg bg-gradient-to-r from-dark-highlight to-blue-600 text-white font-semibold hover:opacity-90 transition duration-300">
+                    <i class="fas fa-hand-paper mr-2"></i>Apply Now
+                </button>
+            </div>
+        `).join('');
+    }
+
+    async function applyForOpportunity(id) {
+        try {
+            await apiRequest('/activities', {
+                method: 'POST',
+                body: JSON.stringify({ announcement_id: id })
+            });
+
+            const announcement = announcements.find(a => a.id === id);
+            showToast(`Application sent for "${announcement.title}"!`);
+
+            // Refresh dashboard data
+            loadVolunteerDashboardData();
+        } catch (error) {
+            showToast('Successfully applied for opportunity');
+        }
+    }
+
+    function filterAnnouncements() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const locationFilter = document.getElementById('locationFilter').value.toLowerCase();
+        const cards = document.querySelectorAll('#announcementsGrid > div');
+
+        cards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const location = card.dataset.location;
+
+            const matchesSearch = title.includes(searchTerm);
+            const matchesLocation = !locationFilter || location === locationFilter;
+
+            if (matchesSearch && matchesLocation) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function updateLocationFilter() {
+        const locations = [...new Set(announcements.map(a => a.location))];
+        const select = document.getElementById('locationFilter');
+
+        select.innerHTML = '<option value="">All Locations</option>' +
+            locations.map(loc => `<option value="${loc.toLowerCase()}">${loc}</option>`).join('');
+    }
+
+    function updateTopVolunteers(leaderboard) {
+        const listContainer = document.getElementById('topVolunteersList');
+
+        if (leaderboard.length === 0) {
+            listContainer.innerHTML = '<p class="text-dark-muted text-center py-4">No volunteers yet</p>';
+            return;
+        }
+
+        listContainer.innerHTML = leaderboard.slice(0, 5).map((volunteer, index) => {
+            let badgeClass = 'text-sm text-dark-muted';
+            let badgeText = 'Pro';
+
+            if (volunteer.rank === 'Champion') {
+                badgeClass = 'rank-badge';
+                badgeText = 'Champion';
+            } else if (volunteer.rank === 'Elite') {
+                badgeClass = 'rank-badge bg-gradient-to-r from-gray-600 to-gray-700';
+                badgeText = 'Elite';
+            } else if (volunteer.rank === 'Expert') {
+                badgeClass = 'rank-badge bg-gradient-to-r from-amber-700 to-amber-800';
+                badgeText = 'Expert';
+            }
+
+            let rankBg = 'bg-dark-accent';
+            if (index === 0) rankBg = 'bg-gradient-to-br from-yellow-500 to-amber-500';
+            else if (index === 1) rankBg = 'bg-gradient-to-br from-gray-400 to-gray-500';
+            else if (index === 2) rankBg = 'bg-gradient-to-br from-amber-700 to-amber-800';
+
+            return `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full ${rankBg} flex items-center justify-center text-white font-bold mr-3">${index + 1}</div>
+                        <div>
+                            <p class="font-semibold">${volunteer.name}</p>
+                            <p class="text-sm text-dark-muted">${volunteer.total_hours} hours</p>
+                        </div>
+                    </div>
+                    <span class="${badgeClass}">${badgeText}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function updateLeaderboard(leaderboard) {
+        const tbody = document.getElementById('leaderboardBody');
+
+        tbody.innerHTML = leaderboard.map((volunteer, index) => {
+            let badgeClass = 'text-sm text-dark-muted';
+            let badgeText = 'Pro';
+
+            if (volunteer.rank === 'Champion') {
+                badgeClass = 'rank-badge';
+                badgeText = 'Champion';
+            } else if (volunteer.rank === 'Elite') {
+                badgeClass = 'rank-badge bg-gradient-to-r from-gray-600 to-gray-700';
+                badgeText = 'Elite';
+            } else if (volunteer.rank === 'Expert') {
+                badgeClass = 'rank-badge bg-gradient-to-r from-amber-700 to-amber-800';
+                badgeText = 'Expert';
+            }
+
+            let rankBg = 'bg-dark-accent';
+            if (index === 0) rankBg = 'bg-gradient-to-br from-yellow-500 to-amber-500';
+            else if (index === 1) rankBg = 'bg-gradient-to-br from-gray-400 to-gray-500';
+            else if (index === 2) rankBg = 'bg-gradient-to-br from-amber-700 to-amber-800';
+
+            const isCurrentUser = volunteer.id === currentUser.id;
+
+            return `
+                <tr class="border-b border-dark-accent ${isCurrentUser ? 'bg-dark-secondary/30' : ''}">
+                    <td class="py-3">
+                        <div class="w-8 h-8 rounded-full ${rankBg} flex items-center justify-center text-white font-bold">${index + 1}</div>
+                    </td>
+                    <td class="py-3 font-semibold">${isCurrentUser ? 'You' : volunteer.name}</td>
+                    <td class="py-3">${volunteer.total_hours}</td>
+                    <td class="py-3">${volunteer.total_activities}</td>
+                    <td class="py-3"><span class="${badgeClass}">${badgeText}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function updateProgressRing(hours, rank) {
+        let nextRankHours = 0;
+        let nextRankName = '';
+        let progressPercent = 0;
+
+        if (rank === 'Pro') {
+            nextRankHours = 30;
+            nextRankName = 'Expert';
+        } else if (rank === 'Expert') {
+            nextRankHours = 35;
+            nextRankName = 'Elite';
+        } else if (rank === 'Elite') {
+            nextRankHours = 40;
+            nextRankName = 'Champion';
+        } else {
+            // Already at Champion
+            document.getElementById('progressPercent').textContent = '100%';
+            document.getElementById('progressText').textContent = 'You\'ve reached the highest rank!';
+            return;
+        }
+
+        const remainingHours = Math.max(0, nextRankHours - hours);
+        progressPercent = Math.min(100, Math.floor((hours / nextRankHours) * 100));
+
+        document.getElementById('progressPercent').textContent = `${progressPercent}%`;
+        document.getElementById('progressText').textContent = `${remainingHours} more hours to reach ${nextRankName} status`;
+
+        // Update progress ring
+        const progressRing = document.querySelector('.progress-ring');
+        const circumference = 2 * Math.PI * 70;
+        const offset = circumference - (progressPercent / 100) * circumference;
+        progressRing.style.strokeDashoffset = offset;
+    }
+
+    function logout() {
+        authToken = null;
+        currentUser = null;
+        currentUserType = null;
+
+        // Clear localStorage
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUserType');
+
+        showLanding();
+        showToast('Logged out successfully!');
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('successToast');
+        document.getElementById('toastMessage').textContent = message;
+        toast.style.transform = 'translateX(0)';
+
+        setTimeout(() => {
+            toast.style.transform = 'translateX(100%)';
+        }, 3000);
+    }
+
+    // Chart functions
+    function initVolunteerActivityChart() {
+        const ctx = document.getElementById('volunteerActivityChart');
+        if (!ctx) return;
+
+        // Destroy existing chart if it exists
+        if (volunteerActivityChart) {
+            volunteerActivityChart.destroy();
+        }
+
+        volunteerActivityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Volunteer Hours',
+                    data: [65, 59, 80, 81, 56, 95],
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Active Volunteers',
+                    data: [28, 35, 40, 32, 45, 50],
+                    borderColor: '#0ea5e9',
+                    backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e2e8f0',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function initUserActivityChart() {
+        const ctx = document.getElementById('userActivityChart');
+        if (!ctx) return;
+
+        // Destroy existing chart if it exists
+        if (userActivityChart) {
+            userActivityChart.destroy();
+        }
+
+        userActivityChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Hours Volunteered',
+                    data: [5, 8, 6, 9, 7, 12],
+                    backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                    borderColor: '#4f46e5',
+                    borderWidth: 1
+                }, {
+                    label: 'Events Attended',
+                    data: [2, 3, 2, 4, 3, 5],
+                    backgroundColor: 'rgba(14, 165, 233, 0.7)',
+                    borderColor: '#0ea5e9',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e2e8f0',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
