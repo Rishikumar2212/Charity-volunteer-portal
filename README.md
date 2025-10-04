@@ -1,6 +1,7 @@
 # Charity-volunteer-portal
 
 1. Project Overview :
+   
 This web application connects volunteers with organizations needing help.
 Built using Node.js and Express.js for backend.
 Uses HTML, CSS, and JavaScript for frontend.
@@ -8,7 +9,8 @@ Volunteers can view, apply for, and track volunteer activities.
 Organizations can post opportunities, approve volunteers, and manage activities.
 The system efficiently manages all volunteer-related data in a SQLite database.
 
-2. Technology Stack :
+3. Technology Stack :
+   
 Frontend:
 HTML – structure of pages
 CSS – styling and layout
@@ -24,6 +26,7 @@ bcrypt – for password hashing
 REST APIs – for communication between frontend and backend
 
 3. Database Structure :
+   
 Tables:
 users – stores volunteers and organizations
 announcements – stores volunteering opportunities
@@ -35,6 +38,7 @@ users ↔ volunteer_activities (volunteers apply for activities)
 announcements ↔ volunteer_activities (tracks volunteer participation)
 
 4. Workflow (Step-by-Step) :
+   
 Step 1: User Registration & Login
 Users register as volunteer or organization.
 Passwords are hashed before storing.
